@@ -1,0 +1,13 @@
+beautifulsoup4==4.12.3
+black==24.8.0
+fastapi==0.115.0
+mangum
+pytest==8.3.3
+pytest-cov==5.0.0
+selenium==4.25.0
+uvicorn==0.31.0
+undetected-chromedriver==3.5.5
+yfinance==0.2.43
+fastapi[standard]
+streamlit
+requests
