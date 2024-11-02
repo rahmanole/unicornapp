@@ -38,16 +38,13 @@ def load_filters():
 load_filters()
 st.button("Update")
 if "price" in st.session_state and "vol" in st.session_state and "mkt_cap" in st.session_state:
-    # url = f'http://0.0.0.0:8000/stocks/?price={st.session_state["price"]}&vol={st.session_state["vol"]}&mkt_cap={st.session_state["mkt_cap"]}'
-    url = f'http://0.0.0.0:8000/stocks/{st.session_state.price}/{st.session_state.vol}/{st.session_state.mkt_cap}'
     with st.spinner('Wait for it...'):
-        response = get_api_res(st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
-        # if "filters" not in 
+        response = helper.filter_stocks(st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
         if isinstance(response,pd.DataFrame):
             response = response.drop(["index"],axis=1)
             st.table(response)
         else:
-            st.write("Could load the data")
+            st.write("Could not load the data")
 
     
     
