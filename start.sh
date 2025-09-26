@@ -1,2 +1,2 @@
 #!/bin/bash
-nohup streamlit run ./code/frontend.py
+nohup streamlit run ./code/frontend.py &
