@@ -1,23 +1,9 @@
-from selenium.webdriver.common.by import By
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver import ActionChains
-import undetected_chromedriver as uc
-from selenium import webdriver
-from bs4 import BeautifulSoup as bs
-from bs4 import BeautifulSoup as bs
 from datetime import datetime
 import time
-import os
-import json 
-import shutil
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-import uvicorn
 import pandas as pd
-from selenium.webdriver.chrome.options import Options as ChromeOptions
-import yfinance as yf
 import requests
+from datetime import datetime, time
+from zoneinfo import ZoneInfo  # Python 3.9+
 
 def thousands_to_mln_bln(val):
     val = float(val)
@@ -27,7 +13,7 @@ def convert_to_pct(val):
     val = float(val)*100
     return round(val,2)
 
-def get_from_webull(rankType:str="1d"):
+def get_from_webull(rankType):
     end_point = f"https://quotes-gw.webullfintech.com/api/wlas/ranking/topGainers?regionId=6&rankType={rankType}&pageIndex=1&pageSize=500"
     response = requests.get(end_point)
     data =  response.json()
@@ -42,10 +28,10 @@ def get_sector_name(tickerId:int):
     data =  response.json()
     return data["sectors"][0]["name"]
 
-def filter_stocks(price:float=5.0,vol:float=1,mkt_cap:int=200):
+def filter_stocks(ranktype="1d",price:float=5.0,vol:float=1,mkt_cap:int=200):
     vol = vol*1000000
     mkt_cap = mkt_cap*1000000
-    stocks = get_from_webull()
+    stocks = get_from_webull(ranktype)
     df = pd.DataFrame(stocks)
 
     # columns
@@ -80,6 +66,29 @@ def create_acronym(name):
     else:  # multi-word → take first letter of each word
         return ''.join(word[0].upper() for word in words if word[0].isalpha())
 
+def get_rank_type(tz: str = "America/Chicago") -> str:
+    now = datetime.now()
+    """
+    Returns one of: "preMarket", "1d", "afterMarket" based on local time in America/Chicago.
+    
+    Windows (inclusive of endpoints unless noted):
+      - 03:00 – 08:29  => "preMarket"
+      - 08:30 – 14:59  => "1d"
+      - 15:00 – 02:59  => "afterMarket" (spans midnight)
+    """
+    tzinfo = ZoneInfo(tz)
+    local_now = (now.astimezone(tzinfo) if now else datetime.now(tzinfo))
+    t = local_now.time()
+
+    pre_start, pre_end = time(3, 0), time(8, 29, 59)
+    reg_start, reg_end = time(8, 30), time(14, 59, 59)
+    # afterMarket is everything else (15:00–23:59:59 and 00:00–02:59:59)
+
+    if pre_start <= t <= pre_end:
+        return ["Pre Market","Day","After Market"]
+    if reg_start <= t <= reg_end:
+        return ["Day","Pre Market","After Market"]
+    return ["After Market","Day","Pre Market"]
 
 if __name__ == "__main__":
     data = filter_stocks()

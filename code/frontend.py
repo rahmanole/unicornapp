@@ -23,26 +23,35 @@ def get_api_res(price,vol,mkt_cap):
     except Exception as e:
         raise(e)
 
-@st.fragment
-def load_filters():
-    price = st.number_input("Minimum Price",1.0,1000.0,value = 5.0,step=0.05)
-    vol = st.number_input("Minimum volume",1.0,10.0,value = 1.0,step=0.5)
-    mkt_cap = st.number_input("Minimum Maket Cap",50.0,1000.0,value = 50.0,step=10.0)
- 
-    # vol = st.slider("Select minimum volume",1.0,10.0,0.5)
-    # mkt_cap = st.slider("Select minimum market cap",50,500,10)
-    st.session_state.price = round(price,2)
-    st.session_state.vol = vol
-    st.session_state.mkt_cap = mkt_cap
+rank_type = helper.get_rank_type()
+# @st.fragment
+# def load_filters():
+rank_types = {"Pre Market":"preMarket","Day":"1d","After Market":"afterMarket"}
+price = st.number_input("Minimum Price",1.0,1000.0,value = 5.0,step=0.05)
+vol = st.number_input("Minimum volume",1.0,10.0,value = 1.0,step=0.5)
+mkt_cap = st.number_input("Minimum Maket Cap",50.0,1000.0,value = 50.0,step=10.0)
 
-load_filters()
+# vol = st.slider("Select minimum volume",1.0,10.0,0.5)
+# mkt_cap = st.slider("Select minimum market cap",50,500,10)
+st.session_state.price = round(price,2)
+st.session_state.vol = vol
+st.session_state.mkt_cap = mkt_cap
+rank = st.selectbox("Select Rank Type",rank_type,key="rank_type")
+st.session_state.rank = rank_types[rank]
+
+
+# load_filters()
+col1, col2 = st.columns([1,1])
+# with col1:
 st.button("Update")
-response = helper.filter_stocks(st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
+# with col2:
+
+response = helper.filter_stocks(st.session_state.rank,st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
 # sector_names = sorted(list(set(response.sector.values)))
 response = response.drop(["index"],axis=1)
 # response['sector'] = response['sector'].apply(lambda x: helper.create_acronym(x))
 response = response.rename(columns={"disSymbol":"Ticker","changeRatio":"Change (%)","pprice":"Price","volume":"Volume","marketValue":"Market Cap"}) 
-
+response = response.sort_values(by=["Change (%)"],ascending=False).reset_index(drop=True)
 # # Collapsible widget using expander
 # with st.expander("Show Acronyms"):
 #     for name in sector_names:
