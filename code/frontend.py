@@ -28,8 +28,8 @@ rank_type = helper.get_rank_type()
 # def load_filters():
 rank_types = {"Pre Market":"preMarket","Day":"1d","After Market":"afterMarket"}
 price = st.number_input("Minimum Price",1.0,1000.0,value = 5.0,step=0.05)
-vol = st.number_input("Minimum volume",1.0,10.0,value = 1.0,step=0.5)
-mkt_cap = st.number_input("Minimum Maket Cap",50.0,1000.0,value = 50.0,step=10.0)
+vol = st.number_input("Minimum volume(Millions)",1.0,10.0,value = 1.0,step=0.5)
+mkt_cap = st.number_input("Minimum Maket Cap(Millions)",50.0,1000.0,value = 50.0,step=10.0)
 
 # vol = st.slider("Select minimum volume",1.0,10.0,0.5)
 # mkt_cap = st.slider("Select minimum market cap",50,500,10)
