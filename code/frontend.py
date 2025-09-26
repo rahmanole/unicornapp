@@ -8,6 +8,16 @@ st.set_page_config(
     page_icon=":tada:",
 )
 
+# Hide the Streamlit main menu and footer
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display: none;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 def get_api_res(price,vol,mkt_cap):
     try:
         stocks = helper.get_data(price=float(price),vol=float(vol),mkt_cap=float(mkt_cap))
