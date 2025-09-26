@@ -19,7 +19,6 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 import yfinance as yf
 import requests
 
-
 def thousands_to_mln_bln(val):
     val = float(val)
     return str(round(val/(1000*1000),2))+"M" if val<999998888 else str(round(val/(1000*1000*1000),2))+"B"
@@ -69,9 +68,18 @@ def filter_stocks(price:float=5.0,vol:float=1,mkt_cap:int=200):
     tmp_df["volume"] = tmp_df["volume"].map(lambda x: thousands_to_mln_bln(x))
     tmp_df["marketValue"] = tmp_df["marketValue"].map(lambda x: thousands_to_mln_bln(x))
     tmp_df["changeRatio"] = tmp_df["changeRatio"].map(lambda x: convert_to_pct(x))
-    tmp_df["sector"] = tmp_df["tickerId"].map(lambda x: get_sector_name(x))
+    # tmp_df["sector"] = tmp_df["tickerId"].map(lambda x: get_sector_name(x))
     tmp_df.drop(["tickerId"],axis=1,inplace=True)
     return tmp_df
+
+# Function to create acronyms
+def create_acronym(name):
+    words = name.split()
+    if len(words) == 1:  # single word → take first 4 chars
+        return name[:4].upper()
+    else:  # multi-word → take first letter of each word
+        return ''.join(word[0].upper() for word in words if word[0].isalpha())
+
 
 if __name__ == "__main__":
     data = filter_stocks()

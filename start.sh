@@ -1,2 +1,2 @@
 #!/bin/bash
-streamlit run /home/ubuntu/repo/unicornapp/code/frontend.py
+streamlit run ./code/frontend.py

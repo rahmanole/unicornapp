@@ -1,10 +1,11 @@
 import streamlit as st
-import app
-import time
-import requests
 import pandas as pd
 import helper
 
+st.set_page_config(
+    page_title="Stock Screener",
+    page_icon=":tada:",
+)
 
 def get_api_res(price,vol,mkt_cap):
     try:
@@ -24,7 +25,6 @@ def get_api_res(price,vol,mkt_cap):
 
 @st.fragment
 def load_filters():
-    
     price = st.number_input("Minimum Price",1.0,1000.0,value = 5.0,step=0.05)
     vol = st.number_input("Minimum volume",1.0,10.0,value = 1.0,step=0.5)
     mkt_cap = st.number_input("Minimum Maket Cap",50.0,1000.0,value = 50.0,step=10.0)
@@ -37,12 +37,22 @@ def load_filters():
 
 load_filters()
 st.button("Update")
+response = helper.filter_stocks(st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
+# sector_names = sorted(list(set(response.sector.values)))
+response = response.drop(["index"],axis=1)
+# response['sector'] = response['sector'].apply(lambda x: helper.create_acronym(x))
+response = response.rename(columns={"disSymbol":"Ticker","changeRatio":"Change (%)","pprice":"Price","volume":"Volume","marketValue":"Market Cap"}) 
+
+# # Collapsible widget using expander
+# with st.expander("Show Acronyms"):
+#     for name in sector_names:
+#         acronym = helper.create_acronym(name)
+#         st.write(f"{acronym}: {name}")
+
 if "price" in st.session_state and "vol" in st.session_state and "mkt_cap" in st.session_state:
     with st.spinner('Wait for it...'):
-        response = helper.filter_stocks(st.session_state.price,st.session_state.vol,st.session_state.mkt_cap)
         if isinstance(response,pd.DataFrame):
-            response = response.drop(["index"],axis=1)
-            st.table(response)
+            st.dataframe(response,hide_index=True)
         else:
             st.write("Could not load the data")
 
