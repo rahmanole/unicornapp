@@ -89,7 +89,7 @@ def render_fragment():
     if "price" in st.session_state and "vol" in st.session_state and "mkt_cap" in st.session_state:
         with st.spinner('Wait for it...'):
             if isinstance(response,pd.DataFrame):
-                st.dataframe(response,hide_index=True)
+                st.dataframe(response,hide_index=True,height=33*16)
             else:
                 st.write("Could not load the data")
 render_fragment()
