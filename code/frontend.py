@@ -8,15 +8,30 @@ st.set_page_config(
     page_icon=":tada:",
 )
 
-# Hide the Streamlit main menu and footer
 hide_streamlit_style = """
 <style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-.stDeployButton {display: none;}
+    /* Hides the Streamlit main menu and the header */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Removes the padding from the main block container at the top */
+    .stMainBlockContainer {
+        padding-top: 2rem;
+    }
+    
+    /* Hides the "Deploy" button on Streamlit Community Cloud */
+    .stDeployButton {
+        display: none;
+    }
+
+    /* Hides the "Made with Streamlit" footer */
+    footer {
+        visibility: hidden;
+    }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 def get_api_res(price,vol,mkt_cap):
     try:
